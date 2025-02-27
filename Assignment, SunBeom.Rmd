@@ -1,0 +1,167 @@
+---
+title: "Assignment 2, Lee"
+author: "SunBeom Lee"
+date: "2025-02-27"
+output: html_document
+---
+
+```{r}
+#Question 2
+##The KNN Classifier is used for categorical variables, which means that it assigns the class label for a new data point. KNN Classifier also shows Y as 0 or 1. On the other hand, the KNN regression is used for numerical variables. This method predicts the quantitative value of Y, which can also be continuous. 
+```
+
+```{r}
+#Question 9 Part a)
+library(ISLR)
+library(MASS)
+plot(Auto)
+```
+
+```{r}
+#Question 9 Part b)
+Auto1<-Auto
+Auto1$name=NULL
+cor(Auto1)
+```
+
+```{r}
+#Question 9 Part c)
+y1<-lm(mpg~ .-name,data=Auto)
+summary(y1)
+```
+
+```{r}
+#i) There seems to be a relationship in at least one predictor and response variable. This can be noticed when the p-value is less than 0.05 in the F-statistic. 
+```
+
+```{r}
+#ii) The predictors that appear to have a statistically significant relationship to the response are: displacement, weights, year and origin.
+```
+
+```{r}
+#iii) The coefficient for the year is 0.750773. This means that with each additional year, the response variable increases by approximately 0.75 units with all the other variables held constant. 
+```
+
+```{r}
+#Question 9 Part d)
+par(mfrow=c(2,2))
+plot(y1)
+plot(predict(y1),rstudent(y1))
+plot(hatvalues(y1))
+which.max(hatvalues(y1))
+```
+```{r}
+#Question 9 Part d)
+## As we can see on the "residuals vs fitted" plot, the plot is U-shaped. This means that there is non-linearity. 
+## Looking at the QQ plot, there are numerous points on the right tail that are not fitting along the normal distribution. Therefore, we can't assume normality assumption. 
+## The sqrt standardized residuals plot shows that most of the observations fall inside the range of 0 and 2. This shows that normalit assumption is reasonable. 
+## The Cook's Distance shows that there are no influential points that are impacting the slope coefficient. 
+```
+
+```{r}
+#Question 9 Part e)
+model_interaction <- lm(mpg ~ (cylinders + displacement + horsepower + weight + acceleration + year + origin)^2, data = Auto)
+summary(model_interaction)
+```
+
+```{r}
+#Question 9 Part e)
+## The interactions that appear to be statistically significant are: Displacement:Year, Acceleration:Year, Acceleration:Origin
+```
+
+```{r}
+#Question 9 Part f)
+par(mfrow=c(2,2))
+y2<-lm(mpg~weight+I((weight)^2),Auto)
+summary(y2)
+plot(y2)
+```
+
+```{r}
+#Question 9 Part f)
+## The QQ plot shows that the regression model does not follow the normal distribution. Furthermore, the Cook's Distance shows that there are no influential points impacting the slope coefficient. 
+```
+
+```{r}
+#Question 10 Part a)
+carsales<-lm(Sales~Price+Urban+US,data=Carseats)
+summary(carsales)
+```
+```{r}
+#Question 10 Part b)
+## Price: For each $1 increase in price, the expected sales decrease by 0.0545 units when all the other variables are held constant. 
+## UrbanYes: The coefficient (-0.0219) is close to 0, which means that being in urban location does not have a statistically significant impact on sales. 
+## USYes: US stores sell approximately 1.2 more units than stores outside the US, when price and Urban status is held constant. 
+```
+
+```{r}
+#Question 10 Part c)
+## Sales = 13.043−0.05446(Price)−0.02192(UrbanYes)+1.20057(USYes)
+```
+
+```{r}
+#Question 10 Part d)
+## The null hypothesis can be rejected for Price and UrbanYes because they have p-values that are less than 0.05. 
+```
+
+```{r}
+#Question 10 Part e)
+carsales_var<-lm(Sales~Price+US,data=Carseats)
+summary(carsales_var)
+```
+```{r}
+#Question 10 Part f)
+anova(carsales,carsales_var)
+```
+```{r}
+#Question 10 Part f)
+## After removing the urban variable, there was only a slight increase in adjusted r square and slight decrease in residual standard error. Furthermore, the Anova test shows that this difference is not statistically significant. Therefore, we fail to reject the null hypothesis. 
+```
+
+```{r}
+#Question 10 Part g)
+confint(carsales_var)
+```
+```{r}
+#Question 10 Part h)
+par(mfrow=c(2,2))
+plot(predict(carsales_var),rstudent(carsales_var))
+leverage<-hat(model.matrix(carsales_var))
+plot(leverage)
+4/nrow(Carseats)
+plot(Carseats$Sales,Carseats$Price)
+points(Carseats[leverage>0.01,]$Sales,Carseats[leverage>0.01,]$Price,col='blue')
+```
+```{r}
+#Question 10 Part h)
+## Looking at the rstudent residuals vs predicted value plot, we can see that there are no presence of outliers. This is because the residuals are within the range of -3 to 3. Therefore, we can conclude that there are no evidence of outliers or high-leverage observations. 
+```
+
+```{r}
+#Question 12 Part a)
+## In order for the coefficient estimate for the regression of X onto Y to be the same as the coefficient estimate for the regression of Y onto X, the variables X and Y have to be perfectly linearly related.
+```
+
+```{r}
+#Question 12 Part b)
+x=rnorm(100)
+y=rbinom(100,2,0.3)
+example<-lm(y~x+0)
+summary(example)
+```
+```{r}
+example1<-lm(x~y+0)
+summary(example1)
+```
+```{r}
+#Question 12 Part c)
+x=1:100
+y=100:1
+example2<-lm(y~x+0)
+summary(example2)
+```
+```{r}
+example3<-lm(x~y+0)
+summary(example3)
+```
+
